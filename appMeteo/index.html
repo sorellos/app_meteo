@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App-meteo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="card">
+        <!--section pour la recherche-->
+        <div class="search">
+            <input type="text" placeholder="enter city name" spellcheck="false">
+            <button><img src= "img icon/search.png" alt="searchImg"></button>
+        </div>
+        <div class="error">
+            <p>Invalid city name</p>
+        </div>
+
+        <!--section pour les resultats recherches-->
+        <div class="weather">
+            <img src="img icon/heavy-rain.png" class="weather-icon" alt="weather-icon">
+            <h1 class="temperature">22°C</h1>
+            <h2 class="ville">Bazou</h2>
+
+            <div class="detailS">
+                <div class="elt">
+                    <img src="img icon/humidity.png" alt="humidity">
+                    <div>
+                        <p id="humidity">50%</p>
+                        <p>humidity</p>
+                    </div>
+                </div>
+                <!--details 2-->
+                <div class="elt">
+                    <img src="img icon/wind.png" alt="wind">
+                    <div>
+                        <p id="wind">5 Km/h</p>
+                        <p>wind Speed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script lang="js">
+
+        const apikey='4ba8e08025113aae717da4aaa794e133'
+        const apiUrl='https://api.openweathermap.org/data/2.5/weather?units=metric&q='      
+        //variables pour recuperer la ville entree par l'utlisateur et bouton recherche
+        const searchText = document.querySelector('.search input')
+        const searchBtn = document.querySelector('.search button') 
+        
+       // alert(searchText.value)
+        
+        //appel de la fct lorsque 
+        searchBtn.addEventListener('click',()=>{
+            checkWeather(searchText.value)
+        })
+
+            async function checkWeather( ville ) {
+                const response= await fetch(apiUrl + ville + `&appid=${apikey}`)
+                let data= await response.json()
+                //ajout d'erreur en cas de ville invalide
+                if (response.status == 404) {
+                    document.querySelector('.error').style.display='block'
+                    document.querySelector('.weather').stlye.display='none'
+                }else{
+        
+                    //console.log(data)
+                    //recuperation de chaque informations
+                    document.querySelector('.ville').innerHTML=data.name
+                    document.querySelector('.temperature').innerHTML= Math.ceil(data.main.temp)  + "°C" //faut arondir   
+                    document.getElementById('humidity').innerHTML= data.main.humidity + "%"
+                    document.getElementById('wind').innerHTML= data.wind.speed + "km/h"                
+                    let weatherIcon=document.querySelector('.weather-icon')
+
+                    //modification des images en fct* du climat
+                    switch (data.weather[0].main) {
+                        case "Clouds":
+                            weatherIcon.src="img icon/clouds.png"; 
+                            break;
+                        
+                        case "Clear":
+                            weatherIcon.src="img icon/clear-sky.png"
+                            break;
+                        
+                        case "Rain":
+                            weatherIcon.src="img icon/heavy-rain.png"                        
+                            break;
+        
+                        case "Drizzle":
+                            weatherIcon.src="img icon/drizzle.png"                                            
+                            break;
+                        
+                        case "Mist":
+                            weatherIcon.src="img icon/mist.png"                        
+                            break;
+
+                        default:
+                            break;
+                    }
+                    document.querySelector('.weather').style.display='bock'
+                    document.querySelector('.error').style.display='none'
+                }
+               
+            
+            }
+    </script>
+</body>
+</html>
